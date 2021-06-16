@@ -6,11 +6,12 @@
 # (x, y, x + offset, y + offset)
 
 import pygame
-
+import constants
+import os
 class spritesheet(object):
     def __init__(self, filename):
         try:
-            self.sheet = pygame.image.load(filename).convert()
+            self.sheet = pygame.image.load(filename).convert_alpha()
         except pygame.error as message:
             print('Unable to load spritesheet image:', filename)
             raise SystemExit(message)
@@ -18,12 +19,12 @@ class spritesheet(object):
     def image_at(self, rectangle, colorkey = None):
         "Loads image from x,y,x+offset,y+offset"
         rect = pygame.Rect(rectangle)
-        image = pygame.Surface(rect.size).convert()
-        image.blit(self.sheet, (0, 0), rect)
-        if colorkey is not None:
-            if colorkey is -1:
-                colorkey = image.get_at((0,0))
-            image.set_colorkey(colorkey, pygame.RLEACCEL)
+        image = self.sheet.subsurface(rect)
+
+        # if colorkey is not None:
+        #     if colorkey is -1:
+        #         colorkey = image.get_at((0,0))
+        #     image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
     # Load a whole bunch of images and return them as a list
     def images_at(self, rects, colorkey = None):
@@ -36,21 +37,9 @@ class spritesheet(object):
                 for x in range(image_count)]
         return self.images_at(tups, colorkey)
 
-if __name__ == "__main__":
-  import os
-  WIN = pygame.display.set_mode((900, 500))
-  filename = os.path.join('src', 'assets', 'Spritesheet','UIpacksheet_transparent.png')
-  ss = spritesheet(filename)
-  img = ss.image_at((378, 108, 16, 16))
 
-  clock = pygame.time.Clock()
-  run = True
-  while run:
-    for event in pygame.event.get():
-      if event.type == pygame.QUIT:
-        run = False
-    WIN.blit(img, (200, 200))
-    pygame.display.update()
-  pygame.quit()
-
-    
+def load_image(*args, rectangle=(0,0,32,32)):
+    imagePath = os.path.join(*args)
+    image = pygame.image.load(imagePath).convert_alpha()
+    rect = pygame.Rect(rectangle)
+    return image.subsurface(rect)

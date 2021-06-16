@@ -2,6 +2,7 @@ import pygame
 import constants
 from actor import Player, Doodad
 from level import Level
+from task import Task
 
 def main():
   # main program
@@ -10,18 +11,13 @@ def main():
   WIN = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
   bounds = WIN.get_rect()
   pygame.display.set_caption("Sammie")
-
   # create player
   
 
   # create some doodads
-
-  doodad_1 = Doodad((200, 200), bounds, constants.UI_PATH, constants.FILLER_DOODAD)
-  doodad_2 = Doodad((400, 400), bounds, constants.UI_PATH, constants.FILLER_DOODAD)
-  player = Player(bounds.center, bounds, [doodad_1, doodad_2])
+  player = Player(bounds.center, bounds)
   # create levels & tasks
-  level_01 = Level(player, [doodad_1, doodad_2])
-
+  task = Task(player)
   # set timer
   clock = pygame.time.Clock()
   run = True
@@ -30,10 +26,15 @@ def main():
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         run = False
+      if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        task.click()
+
     keys_pressed = pygame.key.get_pressed()
-    player.handle_input(keys_pressed)
-    level_01.update(WIN)
-    player.update(WIN)
+    task.handleInput(keys_pressed)
+    task.update()
+
+    task.draw(WIN)
+    # player.draw_ui(WIN)
     pygame.display.update()
   pygame.quit()
 
